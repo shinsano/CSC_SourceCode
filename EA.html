@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+    <title>MAC System</title>
+    <link rel="stylesheet" href="https://yuriom.pythonanywhere.com/stylesheet.css" type="text/css"
+        crossorigin="anonymous">
+    <!-- BootStrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" />
+    <style type="text/css">
+        .draggable-word {
+            max-width: 300px;
+        }
+        .draggable-word:hover {
+            background: #eaeaea;
+        }
+        #explorer-header {
+            font-size: 16px;
+            color: orange;
+            border-radius: 0;
+            background: white;
+        }
+        #search-box::-webkit-search-cancel-button {
+            -webkit-appearance: searchfield-cancel-button;
+        }
+        #clear-search {
+            position: relative;
+            display: block;
+            left: -30px;
+            top: 9px;
+            width: 20px;
+            height: 20px;
+            background: url(https://library.kissclipart.com/20180903/rze/kissclipart-backspace-icon-clipart-computer-keyboard-backspace-e758bc5474f42dea.png);
+            background-size: cover;
+            cursor: pointer;
+        }
+        #delete-comb {
+            position: absolute;
+            top: 9px;
+            margin-left: 10px;
+            width: 15px;
+            height: 15px;
+            background: url(https://icons-for-free.com/iconfiles/png/512/cross+delete+icon-1320196185584855591.png);
+            background-size: cover;
+            cursor: pointer;
+        }
+        textarea:focus-visible {
+            outline: none;
+        }
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 50000; /* Sit on top */
+            padding-top: 20vh; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 40px 50px;
+            border: 1px solid #888;
+            width: 50%;
+        }
+
+        /* The Close Button */
+        #dialog_close {
+            color: #aaaaaa;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            right: 20px;
+            top: 8px;
+        }
+
+        #dialog_close:hover,
+        #dialog_close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .popuptext {
+            visibility: hidden;
+            background-color: #ffddce;
+            color: #212529;
+            font-weight: 500;
+            border-radius: 6px;
+            padding: 8px 15px;
+            position: absolute;
+            z-index: 10000;
+            left: calc(100% - 580px);
+        }
+        .popuptext strong {
+            background: #dc3545;
+            color: white;
+            padding: 1px 10px 3px;
+            border-radius: 4px;
+        }
+        .popuptext span {
+            color: orange;
+            font-weight: 700!important;
+            font-size: 16px;
+        }
+        .popuptext::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: -10px;
+            transform: translateY(-50%);
+            margin-left: -10px;
+            border-width: 10px;
+            border-style: solid;
+            border-color: transparent #ffddce transparent transparent;
+        }
+        .popuptext.show {
+            visibility: visible;
+            -webkit-animation: fadeIn 1s;
+            animation: fadeIn 1s;
+        }
+        #popup4 {
+            transform: translateX(-100%) !important;
+            left: 10px !important;
+        }
+        #popup2,#popup3,#popup4 {
+            top: 30%;
+        }
+        #popup1,#popup4 {
+            max-width: 320px;
+        }
+        #popup2,#popup3 {
+            max-width: 465px;
+        }
+        #popup4::after {
+            left: 100%;
+            margin-left: 0px !important;
+            border-color: transparent transparent transparent #ffddce !important;
+        }
+        /* Add animation (fade in the popup) */
+        @-webkit-keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity:1 ;}
+        }
+    </style>
+</head>
+
+<body class="noselect" style="visibility: hidden;">
+    <div id="loading" style="display: none;">
+        <div id="spinner">
+            <span id="alert-fix-text"></span>
+        </div>
+        <div id="overlay"></div>
+    </div>
+    <div id="wrapper" data-toggle="tooltip">
+        <nav id="navbar" class="navbar navbar-sm navbar-dark bg-dark d-flex p-0">
+            <span class="w-100 bg-secondary text-white px-4 py-1" style="height: 35px;"> Step 1: Design brief <img src="https://www.freeiconspng.com/uploads/white-arrow-transparent-png-10.png" width="50"> Word 1</span>
+            <div id="design-brief-container" class="d-flex mr-auto p-2" style="width: 50%; padding: 0; padding-left: 8px; justify-content: center; align-items: center;">
+                <div class="navbar-text px-3" style="color: orange;">
+                    <b>Design&nbsp;Brief</b>
+                </div>
+                <div class="navbar-text w-100"
+                    style="font-size: 14px; display: inline-block; border-radius: 6px; padding-left: 8px; padding-right: 8px; margin: 8px 8px 8px 8px; background: black; color: white; font-style: italic;">
+                    <textarea id="design-brief" class="w-100 bg-transparent border-0 text-white" placeholder="Copy and paste the design brief here" onclick="closePopup('popup1')"></textarea>
+                </div>
+                <span class="popuptext" id="popup1">Copy and paste the design brief here and press <strong>Search for Word 1</strong> to start</span>
+            </div>
+            <div class="d-flex p-2 pr-4" style="padding: 0px 0px; padding-left: 8px;">
+                <div id="manual-search" class="d-flex" style="visibility: hidden;">
+                    <button id=clear-button class="btn btn-sm btn-secondary navbar-btn" tabindex=1
+                        accesskey="c">Clear</button>
+                    <input id="search-box" class="form-control form-control-sm" type="text"
+                        placeholder="Add more words here" value="" style="width: 256px;">
+                    <span id="clear-search" onclick="$('#search-box').val('')"></span>
+                    <button id="search-button" class="btn btn-sm btn-secondary navbar-btn" style="height: 40px;" tabindex=2
+                        accesskey="s">
+                        <svg id="search-icon" class="search-icon" viewBox="0 0 24 24">
+                            <path fill="white"
+                                d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                            <path d="M0 0h24v24H0z" fill="none" />
+                        </svg>
+                    </button>
+                </div>
+                <button id="stopwatch-button" class="btn btn-sm btn-danger navbar-btn" tabindex=3 accesskey="s">Search for Word 1</button>
+            </div>
+        </nav>
+        <div id="lower-pane">
+            <div id="explorer-header" class="alert fixed-top font-weight-bold">
+                <span class="align-middle">Explorer</span>
+                <span id="scroll_tip" style="visibility: hidden;" class="align-middle float-right">Scroll to see more words &gt;</span>
+            </div>
+            <div id="alert" class="alert alert-success alert-dismissible;" style="visibility: hidden;" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <span id="alert-text">&nbsp</span>
+            </div>
+            <div id="graph" onmousedown="closePopup('popup2'); closePopup('popup3');">
+            </div>
+            <span class="popuptext" id="popup2">Drag and drop 5 words you want to <span>Candidates for Word 1</span> and press <strong>Search for Word 2</strong> button</span>
+            <span class="popuptext" id="popup3">Drag and drop a combination you want to <span>Character Space</span> and press <strong>Search for Word 3/4</strong> button</span>
+            <div id="control-panel">
+                <span class="w-100 bg-secondary text-white px-4 py-1 d-block" style="height: 35px;"> Step 2: Word 1 <img src="https://www.freeiconspng.com/uploads/white-arrow-transparent-png-10.png" width="50"> Word 2</span>
+                <div class="heading align-items-center bg-transparent font-weight-bold" style="color: orange;">
+                    <span class="mr-auto p-2">
+                        Candidates for Word 1
+                    </span>
+                </div>
+                <div id="word-pool" style="min-height: 50px;" class="px-4">
+                </div>
+                <button id="search-w2-word-pool-button" onclick="searchW2()" class="btn btn-sm btn-danger p-2" tabindex=4 accesskey="p" style="right: 25px; visibility: hidden; position: absolute;">
+                    Search for Word 2
+                </button>
+
+                <span class="w-100 bg-secondary text-white px-4 py-1 d-block" style="height: 35px; position: absolute; bottom: 410px;"> Step 3: Word 1 - Word 2 <img src="https://www.freeiconspng.com/uploads/white-arrow-transparent-png-10.png" width="50"> Word 3 & Word 4</span>
+                <div class="heading align-items-center bg-transparent font-weight-bold" style="color: orange; position: absolute; bottom: 370px;">
+                    <span class="mr-auto p-2">
+                        Character Space
+                    </span>
+                </div>
+                <!--<div id="character-space-heading" class="heading d-flex align-items-center w-100" style="position: absolute; bottom: 535px;">-->
+                <!--    <span class="mr-auto p-2">-->
+                <!--        Character&nbsp;Space-->
+                <!--    </span>-->
+                <!--</div>-->
+                <div id="design-concept-map" class="row" style="width: 576px; height: 400px; margin: 0; padding: 0; bottom: 0px; position: absolute;" onclick="closePopup('popup4');">
+                    <button id="search-w3w4-space-button" onclick="searchW3W4()" class="btn btn-sm btn-danger p-2" tabindex=4 accesskey="p" style="right: 25px; visibility: hidden; position: absolute; top: 5px;">
+                        Search for Word 3/4
+                    </button>
+                    <div class="row"
+                        style="height: 40px; width: 576px; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; color: white;">
+                        <div id="word1-container" style="height: 24px; width: 144px; text-align: center; padding: 0;">
+                            word1</div>
+                    </div>
+                    <div class="row" style="width: 576px; height: 288px; margin: 0; padding: 0;">
+                        <div class="column draggable-word-container"
+                            style="height: 286px; width: 144px; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; color: white;">
+                            <div class="custom-select-panel mr-3 p-1" style="visibility: hidden;">
+                                <div id="word4" class="p-1" style="visibility: hidden;"></div>
+                            </div>
+                            <div id="word4-text" style="height: 24px;width: 144px;text-align: left;">word4</div>
+                        </div>
+                        <div id="design-concept-map-inner-square" class="column"
+                            style="margin: 0; padding: 0; height: 286px; width: 286px;">
+                            <div class="row" style="margin: 0; padding: 0; height: 143px; width: 286px">
+                                <div id="design-concept-map-lefttop-quadrant"
+                                    class="design-concept-map-quadrant column">
+                                    <div id="design-concept-map-quadrant-internal-area4"
+                                        class="design-concept-map-quadrant-internal-area"></div>
+                                    <div id="design-concept-map-circle-righttop" class="design-concept-map-circle">
+                                    </div>
+                                </div>
+                                <div id="design-concept-map-righttop-quadrant"
+                                    class="design-concept-map-quadrant column">
+                                    <div id="design-concept-map-quadrant-internal-area1"
+                                        class="design-concept-map-quadrant-internal-area">
+                                    </div>
+                                    <div id="design-concept-map-circle-rightbottom" class="design-concept-map-circle">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin: 0; padding: 0; height: 143px; width: 286px">
+                                <div id="design-concept-map-leftbottom-quadrant"
+                                    class="design-concept-map-quadrant column">
+                                    <div id="design-concept-map-quadrant-internal-area3"
+                                        class="design-concept-map-quadrant-internal-area"></div>
+                                    <div id="design-concept-map-circle-lefttop" class="design-concept-map-circle"></div>
+                                </div>
+                                <div id="design-concept-map-rightbottom-quadrant"
+                                    class="design-concept-map-quadrant column">
+                                    <div id="design-concept-map-quadrant-internal-area2"
+                                        class="design-concept-map-quadrant-internal-area"></div>
+                                    <div id="design-concept-map-circle-leftbottom" class="design-concept-map-circle">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column draggable-word-container"
+                            style="height: 288px; width: 144px; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center;">
+                            <div id="word2-container"
+                                style="height: 24px; width: 144px; text-align: left; padding: 0px 0 0 16px;">word2</div>
+                        </div>
+                    </div>
+                    <div class="row"
+                        style="height: 40px; width: 576px; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; color: white; ">
+                        <div class="custom-select-panel">
+                            <div id="word3-text" style="height: 24px; text-align: center;">word3</div>
+                            <div id="word3" class="p-1" style="visibility: hidden;"></div>
+                        </div>
+                    </div>
+                    <span class="popuptext" id="popup4">Choose Word3 and Word4, then press <strong>Finish</strong> button</span>
+                </div>
+                <span id="stopwatch-display"
+                    style='font-family: "Roboto Mono", monospace; font-weight: 300; font-size: 24px; color: white; height: 40px; position: absolute; right: 25px; bottom: 20px; visibility: hidden;'>00:00:00</span>
+                <button id="finish-button" class="btn btn-danger" tabindex="3" accesskey="s" style="height: 40px; position: absolute; right: 25px; bottom: 20px; visibility: hidden;">Finish</button>
+            </div>
+        </div>
+    </div>
+    <div id="dialog" class="modal">
+        <div class="modal-content">
+            <!--<span id="dialog_close">&times;</span>-->
+            <h2 class="mb-3">Design concept explanation</h2>
+            <h6 class="mb-4" id="final_result"></h6>
+            <div class="align-items-baseline container row">
+                <h6 class="mr-2">Session Key : </h6>
+                <h6 id="session_key" class="mr-3"></h6>
+                <button id="copy_key" class="btn btn-outline-success" style="font-size: small;">Copy</button>
+            </div>
+        </div>
+    </div>
+    <div id="dragged-word-container"></div>
+    <div id="invisible-tooltip-holder"
+        style="position: fixed; visibility: hidden; left: 0; top: 0; width: 8; height: 32;"></div>
+    <!-- jQuery and Bootstrap-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <!-- 3D -->
+    <script src="https://unpkg.com/3d-force-graph"></script>
+    <script src="https://unpkg.com/three"></script>
+    <script src="https://unpkg.com/three-spritetext"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.6.0/umd/popper.min.js"></script>
+
+    <script src="./EA.js"></script>
+</body>
+
+</html>
