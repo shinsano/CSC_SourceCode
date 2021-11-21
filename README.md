@@ -1,7 +1,7 @@
 # CSC_Source Code and data
 
 Below are the list of source code and generated data during the preliinary studies and the main experiment.  The section on the paper is annotated for simpler tracking.
-## Soure code
+## Source code
 
 
 *   EA.html : the main web application UI (3.2. System overview)
